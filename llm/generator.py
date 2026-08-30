@@ -20,31 +20,33 @@ def generate_answer(question,context): #Will add more context/tools later on
 
     generator = get_generator()
 
-    prompt = f"""
-        You are a fantasy football assistant.
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are a fantasy football assistant."
+                "Answer using only the provided context."
+                "If the context does not contain enough information, say so."
+                "Give one concise answer and do not repeat yourself."
+            )
+        },
+        {
+            "role": "user",
+            "content": f"""
+                CONTEXT:
+                {context}
 
-        Answer the question using only the provided context. 
-
-        Be concise. Answer in 2-4 sentences.
-
-        If the context does not contain enough information to answer the
-        question confidently, say that the context does not provide enough
-        information.
-
-        CONTEXT:
-        {context}
-
-        QUESTION:
-        {question}
-
-        ANSWER:
-        """
+                QUESTION:
+                {question}
+                """
+        }
+                ]
 
     output = generator(
-        prompt, 
-        max_new_tokens=120,
+        messages, 
+        max_new_tokens=150,
         do_sample=True, #False = Picks single most likely token instead of our normal sampling
-        temperature=.6,
+        temperature=.7,
         top_p=.8,
         top_k=20,
         return_full_text=False
