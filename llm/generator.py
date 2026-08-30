@@ -2,7 +2,7 @@ from transformers import pipeline
 
 MODEL_NAME = "Qwen/Qwen3-1.7B"
 
-_generator = None
+generator = None
 
 def get_generator():
     global generator
@@ -10,7 +10,7 @@ def get_generator():
     if generator is None:
         generator = pipeline("text-generation", model=MODEL_NAME)
 
-    return _generator
+    return generator
 
 def generate_answer(question,context): #Will add more context/tools later on
 
@@ -29,7 +29,7 @@ def generate_answer(question,context): #Will add more context/tools later on
 
         QUESTION:
         {question}
-
+git
         ANSWER:
         """
 
