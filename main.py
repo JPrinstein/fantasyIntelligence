@@ -3,7 +3,7 @@ from rag.chunker import chunk_documents
 from rag.embeddings import embed_texts
 from rag.vector_store import build_index
 from rag.retriever import retrieve
-from llm.generator import generate_answer
+from llm.generator import generate_answer, get_generator
 
 documents = load_documents() #Loading our documents, currently from the documents folder
 
@@ -14,6 +14,8 @@ texts = [chunk["text"] for chunk in chunks] #Gets the text fo reach chunk(since 
 embeddings = embed_texts(texts) #Embeds each text
 
 index = build_index(embeddings) #builds our FAISS index
+
+get_generator()
 
 question = input("Ask a fantasy football question: ") #Gets our question from the user
 
