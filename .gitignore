@@ -1,3 +1,5 @@
 .env
 learning_files/
 documents/
+_pychache_/
+*.pyc
