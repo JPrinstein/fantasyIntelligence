@@ -1,32 +1,37 @@
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers.utils import logging
-import torch
 
 MODEL_NAME = "Qwen/Qwen3-1.7B"
 
-generator = None
+model = None
+tokenizer = None
 
 logging.set_verbosity_error()
 
 def get_generator():
-    global generator
+    global model
+    global tokenizer
 
-    if generator is None:
-        generator = pipeline("text-generation", model=MODEL_NAME)
+    if model is None or tokenizer is None:
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
-    return generator
+        model = AutoModelForCausalLM.from_pretrained(MODEL_NAME,            #CausalLM = previous tokens -> predict next token
+                                                     torch_dtype="auto",    #torch_dtype and device_map helps automatically place the model based on my hardware
+                                                     device_map="auto") 
 
-def generate_answer(question,context): #Will add more context/tools later on
+    return model, tokenizer
 
-    generator = get_generator()
+def generate_answer(question,context, thinking=False): #Will add more context/tools later on
+
+    model, tokenizer = get_generator()
 
     messages = [
         {
             "role": "system",
             "content": (
-                "You are a fantasy football assistant."
-                "Answer using only the provided context."
-                "If the context does not contain enough information, say so."
+                "You are a fantasy football assistant. "
+                "Answer using only the provided context. "
+                "If the context does not contain enough information, say so. "
                 "Give one concise answer and do not repeat yourself."
             )
         },
@@ -42,14 +47,37 @@ def generate_answer(question,context): #Will add more context/tools later on
         }
                 ]
 
-    output = generator(
-        messages, 
-        max_new_tokens=150,
-        do_sample=True, #False = Picks single most likely token instead of our normal sampling
-        temperature=.7,
-        top_p=.8,
-        top_k=20,
-        return_full_text=False
-    ) # Set do_sample back to true because it was repeating itself which is one of the most common issues with picking the top token.
+    text = tokenizer.apply_chat_template(
+        messages,
+        tokenize = False,
+        add_generation_prompt = True,
+        enable_thinking = thinking
+    )
 
-    return output[0]["generated_text"]
+    inputs = tokenizer(
+        text,
+        return_tensors="pt"
+    ).to(model.device)
+
+    tokens = 150
+    if thinking:
+        tokens = 500
+
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=tokens,
+        do_sample=True,
+        temperature=0.6,
+        top_p=0.95,
+        top_k=20
+    )
+
+    input_length = inputs["input_ids"].shape[1]
+    generated_tokens = outputs[0][input_length:] #Removes the original prompt from the output
+
+    answer = tokenizer.decode(
+        generated_tokens,
+        skip_special_tokens=True
+    )
+
+    return answer.strip()
