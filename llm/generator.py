@@ -1,9 +1,21 @@
 from transformers import pipeline
 
-#Note - will have to experiment with which model is best, but will use qwen 1.5B for now
-generator = pipeline("text-generation", model="Qwen/Qwen2.5-1.5B-Instruct")
+MODEL_NAME = "Qwen/Qwen3-1.7B"
+
+_generator = None
+
+def get_generator():
+    global generator
+
+    if generator is None:
+        generator = pipeline("text-generation", model=MODEL_NAME)
+
+    return _generator
 
 def generate_answer(question,context): #Will add more context/tools later on
+
+    generator = get_generator()
+
     prompt = f"""
         You are a fantasy football assistant.
 
