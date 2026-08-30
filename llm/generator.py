@@ -1,4 +1,5 @@
 from transformers import pipeline
+import torch
 
 MODEL_NAME = "Qwen/Qwen3-1.7B"
 
@@ -29,15 +30,18 @@ def generate_answer(question,context): #Will add more context/tools later on
 
         QUESTION:
         {question}
-git
+
         ANSWER:
         """
 
     output = generator(
         prompt, 
-        max_new_tokens=500,
-        do_sample=False, #Picks single most likely token instead of our normal sampling
+        max_new_tokens=200,
+        do_sample=True, #False = Picks single most likely token instead of our normal sampling
+        temperature=.7,
+        top_p=.8,
+        top_k=20,
         return_full_text=False
-        )
+    ) # Set do_sample back to true because it was repeating itself which is one of the most common issues with picking the top token.
 
     return output[0]["generated_text"]
