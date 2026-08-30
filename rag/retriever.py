@@ -11,7 +11,7 @@ def retrieve(question, chunks, index, k=2):
     for i, index_number in enumerate(indices[0]):
         results.append({
             "text": chunks[index_number]["text"],
-            "source": chunks[index_number]["sources"],
+            "source": chunks[index_number]["source"],
             "distance": distances[0][i]
         })
 
