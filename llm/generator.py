@@ -24,5 +24,8 @@ def generate_answer(question,context): #Will add more context/tools later on
     output = generator(
         prompt, 
         max_new_tokens=500,
-        do_sample=False #Picks single most likely token instead of our normal sampling
+        do_sample=False, #Picks single most likely token instead of our normal sampling
+        return_full_text=False
         )
+
+    return output[0]["generated_text"]
