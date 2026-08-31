@@ -1,0 +1,30 @@
+[
+  {
+    "question": "What does PPR mean?",
+    "should_answer": true
+  },
+  {
+    "question": "Why are rushing quarterbacks valuable?",
+    "should_answer": true
+  },
+  {
+    "question": "How many points is a rushing touchdown worth?",
+    "should_answer": true
+  },
+  {
+    "question": "Why are receptions valuable in PPR leagues?",
+    "should_answer": true
+  },
+  {
+    "question": "Are running backs or wide receivers more important?",
+    "should_answer": false
+  },
+  {
+    "question": "What is the most important position?",
+    "should_answer": false
+  },
+  {
+    "question": "What is the best pizza topping?",
+    "should_answer": false
+  }
+]

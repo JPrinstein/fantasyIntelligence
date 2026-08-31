@@ -1,5 +1,6 @@
 .env
 learning_files/
 documents/
-_pychache_/
+__pycache__/
 *.pyc
+tests/__init__.py
