@@ -6,16 +6,11 @@ from rag.retriever import retrieve
 from llm.generator import generate_answer, get_generator
 from rag.coverage import check_coverage
 from rag.reranker import rerank_results
+from rag.vector_store import load_index
+from rag.storage import load_chunks
 
-documents = load_documents() #Loading our documents, currently from the documents folder
-
-chunks = chunk_documents(documents, chunk_size=50, overlap=15) #Chunking our documents
-
-texts = [chunk["text"] for chunk in chunks] #Gets the text fo reach chunk(since each chunk) also has the sources
-
-embeddings = embed_texts(texts) #Embeds each text
-
-index = build_index(embeddings) #builds our FAISS index
+chunks = load_chunks("rag_data/chunks.json")
+index = load_index("rag_data/index.faiss")
 
 get_generator()
 
