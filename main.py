@@ -7,7 +7,7 @@ from llm.generator import generate_answer, get_generator
 
 documents = load_documents() #Loading our documents, currently from the documents folder
 
-chunks = chunk_documents(documents, chunk_size=50) #Chunking our documents
+chunks = chunk_documents(documents, chunk_size=50, overlap=15) #Chunking our documents
 
 texts = [chunk["text"] for chunk in chunks] #Gets the text fo reach chunk(since each chunk) also has the sources
 
@@ -24,7 +24,7 @@ while True:
     if question.lower().strip() == "quit":
         break
 
-    results = retrieve(question, chunks, index, k=2) #RAG results(currently set to 2 documents(k))
+    results = retrieve(question, chunks, index, k=5) #RAG results(currently set to 2 documents(k))
 
     if not results:
         print("I couldn't find relevant information in the available documents.") #Important because RAG is our only way of getting information. Once tools are added and more context etc. then this will be changed
