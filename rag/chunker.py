@@ -18,10 +18,15 @@ def chunk_documents(documents, chunk_size=50, overlap=15):
     for document in documents:
         document_chunks = chunk_text(document["text"], chunk_size, overlap)
 
-        for chunk in document_chunks:
+        source = document["source"]
+        document_id = source.removesuffix(".txt")
+
+        for chunk_id, chunk in enumerate(document_chunks):
             chunks.append({
                 "text": chunk,
-                "source": document["source"]
+                "source": document["source"],
+                "document_id": document_id,
+                "chunk_id": chunk_id
             })
 
     return chunks
