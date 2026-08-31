@@ -4,6 +4,7 @@ from rag.embeddings import embed_texts
 from rag.vector_store import build_index
 from rag.retriever import retrieve
 from llm.generator import generate_answer, get_generator
+from rag.coverage import check_coverage
 
 documents = load_documents() #Loading our documents, currently from the documents folder
 
@@ -24,10 +25,17 @@ while True:
     if question.lower().strip() == "quit":
         break
 
-    results = retrieve(question, chunks, index, k=5) #RAG results(currently set to 2 documents(k))
+    results = retrieve(question, chunks, index, k=5) #RAG results
 
     if not results:
         print("I couldn't find relevant information in the available documents.") #Important because RAG is our only way of getting information. Once tools are added and more context etc. then this will be changed
+        continue
+
+    coverage_complete, missing_topics = check_coverage(question, results)
+
+    if not coverage_complete:
+        print("\nI don't have enough information to fully answer that question.")
+        print(f"Missing information about: {', '.join(missing_topics)}\n")
         continue
 
     print("\n\nRetrieved Content")
