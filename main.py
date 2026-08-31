@@ -17,14 +17,26 @@ index = build_index(embeddings) #builds our FAISS index
 
 get_generator()
 
-question = input("Ask a fantasy football question: ") #Gets our question from the user
+
+while True:
+    question = input("\n\nAsk a fantasy football question(type 'quit' to exit): ") #Gets our question from the user
+
+    if question.lower().strip() == "quit":
+        break
+
+    results = retrieve(question, chunks, index, k=2) #RAG results(currently set to 2 documents(k))
+
+    print("\n\nRetrieved Content")
+    for result in results:
+        print(f"\nSource: {result['source']}")
+        print(f"Distance: {result['distance']}")
+        print(result["text"])
+
+    print("\n\nANSWER:\n\n")
+
+    context = "\n\n".join(result["text"] for result in results) #Combines our results into our context
 
 
-results = retrieve(question, chunks, index, k=2) #RAG results(currently set to 2 documents(k))
+    answer = generate_answer(question,context) #ANSWER!!!
 
-context = "\n\n".join(result["text"] for result in results) #Combines our results into our context
-
-
-answer = generate_answer(question,context) #ANSWER!!!
-
-print(answer)
+    print(answer)
