@@ -6,9 +6,6 @@ def retrieve(question, chunks, index, k=2, max_distance=1.5):
 
     distances, indices = search_index(index, question_embedding, k)
 
-    print(distances)
-    print(distances[0])
-
     results = []
 
     for i, index_number in enumerate(indices[0]):
