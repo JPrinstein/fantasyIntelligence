@@ -3,4 +3,4 @@ learning_files/
 documents/
 __pycache__/
 *.pyc
-tests/__init__.py
+rag_data/
