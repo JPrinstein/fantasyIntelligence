@@ -5,6 +5,7 @@ from rag.vector_store import build_index
 from rag.retriever import retrieve
 from llm.generator import generate_answer, get_generator
 from rag.coverage import check_coverage
+from rag.reranker import rerank_results
 
 documents = load_documents() #Loading our documents, currently from the documents folder
 
@@ -38,10 +39,13 @@ while True:
         print(f"Missing information about: {', '.join(missing_topics)}\n")
         continue
 
+    results = rerank_results(question, results, max_results=3)
+
     print("\n\nRetrieved Content")
     for result in results:
         print(f"\nSource: {result['source']}")
         print(f"Similarity: {result['score']}")
+        print(f"Rerank Score: {result['rerank_score']}")
         print(result["text"])
 
     print("\n\nANSWER:\n\n")
