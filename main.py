@@ -26,7 +26,7 @@ while True:
     if question.lower().strip() == "quit":
         break
 
-    results = retrieve(question, chunks, index, k=5) #RAG results
+    results = retrieve(question, chunks, index, k=10) #RAG results
 
     if not results:
         print("I couldn't find relevant information in the available documents.") #Important because RAG is our only way of getting information. Once tools are added and more context etc. then this will be changed
