@@ -26,6 +26,10 @@ while True:
 
     results = retrieve(question, chunks, index, k=2) #RAG results(currently set to 2 documents(k))
 
+    if not results:
+        print("I couldn't find relevant information in the available documents.") #Important because RAG is our only way of getting information. Once tools are added and more context etc. then this will be changed
+        continue
+
     print("\n\nRetrieved Content")
     for result in results:
         print(f"\nSource: {result['source']}")
