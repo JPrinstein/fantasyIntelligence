@@ -7,7 +7,7 @@ from llm.generator import generate_answer, get_generator
 
 documents = load_documents() #Loading our documents, currently from the documents folder
 
-chunks = chunk_documents(documents) #Chunking our documents, currently set to 500 words per
+chunks = chunk_documents(documents, chunk_size=50) #Chunking our documents
 
 texts = [chunk["text"] for chunk in chunks] #Gets the text fo reach chunk(since each chunk) also has the sources
 
@@ -33,7 +33,7 @@ while True:
     print("\n\nRetrieved Content")
     for result in results:
         print(f"\nSource: {result['source']}")
-        print(f"Distance: {result['distance']}")
+        print(f"Similarity: {result['score']}")
         print(result["text"])
 
     print("\n\nANSWER:\n\n")
