@@ -1,7 +1,7 @@
 from rag.embeddings import embed_texts
 from rag.vector_store import search_index
 
-def retrieve(question, chunks, index, k=2, max_distance=1.5):
+def retrieve(question, chunks, index, k=2, max_distance=5): #Max distance will be ~1.5
     question_embedding = embed_texts([question])
 
     distances, indices = search_index(index, question_embedding, k)
