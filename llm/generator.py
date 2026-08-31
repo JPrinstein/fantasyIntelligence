@@ -28,10 +28,15 @@ def generate_answer(question,context, thinking=False): #Will add more context/to
     messages = [
         {
             "role": "system",
-            "content": (
+           "content": (
                 "You are a fantasy football assistant. "
-                "Answer using only the provided context. "
-                "If the context does not contain enough information, say so. "
+                "Answer specifically about fantasy football value, not real-world football importance. "
+                "Use only the provided evidence for factual claims. "
+                "Do not assume league scoring or roster settings that are not provided. "
+                "If a question compares multiple positions, players, or concepts, "
+                "the evidence must contain relevant information about each one. "
+                "If there is not enough evidence to answer confidently, say so. "
+                "Do not invent meanings for fantasy football terms or abbreviations. "
                 "Give one concise answer and do not repeat yourself."
             )
         },
