@@ -8,6 +8,8 @@ from rag.vector_store import build_index
 from rag.retriever import retrieve
 from rag.coverage import check_coverage
 from rag.reranker import rerank_results
+from rag.vector_store import load_index
+from rag.storage import load_chunks
 
 TEST_FILE = Path("tests/rag_questions.json")
 
@@ -31,15 +33,8 @@ def can_answer(question, chunks, index):
     return len(results) > 0 #Meaning we CAN answer because we have documents(currently our only way of getting info)
 
 def main():
-    documents = load_documents()
-
-    chunks = chunk_documents(documents, chunk_size=50, overlap=15)
-
-    texts = [chunk["text"] for chunk in chunks]
-
-    embeddings = embed_texts(texts)
-
-    index = build_index(embeddings)
+    chunks = load_chunks("rag_data/chunks.json")
+    index = load_index("rag_data/index.faiss")  
 
     tests = load_tests()
 
