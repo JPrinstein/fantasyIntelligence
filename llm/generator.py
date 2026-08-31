@@ -17,7 +17,7 @@ def get_generator():
 
         model = AutoModelForCausalLM.from_pretrained(MODEL_NAME,            #CausalLM = previous tokens -> predict next token
                                                      torch_dtype="auto",    #torch_dtype and device_map helps automatically place the model based on my hardware
-                                                     device_map="auto") 
+                                                     ) 
 
     return model, tokenizer
 
