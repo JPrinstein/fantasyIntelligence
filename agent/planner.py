@@ -5,13 +5,14 @@ from tools.rag_tool import TOOL_NAME as RAG_TOOL_NAME
 from tools.rag_tool import TOOL_DESCRIPTION as RAG_TOOL_DESCRIPTION
 from tools.league_tool import TOOL_NAME as LEAGUE_TOOL_NAME
 from tools.league_tool import TOOL_DESCRIPTION as LEAGUE_TOOL_DESCRIPTION
+from agent.validator import validate_plan
 
 AVAILABLE_TOOLS = {
     LEAGUE_TOOL_NAME:{
             "description": RAG_TOOL_DESCRIPTION,
             "arguments":{}
         },
-        
+
     RAG_TOOL_NAME:{
         "description": RAG_TOOL_DESCRIPTION,
         "arguments": {
@@ -144,18 +145,72 @@ def create_plan(question):
     return plan
 
 if __name__ == "__main__":
-    questions = [
-        "What does PPR mean?",
-        "Is this a PPR league?",
-        "How many points is a passing touchdown in my league?",
-        "Why are rushing quarterbacks valuable?",
-        "Why are rushing quarterbacks valuable in my league?"
+    test_plans = [
+        "hello",
+
+        {},
+
+        {
+            "tools": "rag_search"
+        },
+
+        {
+            "tools": [
+                "hello"
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "args": {}
+                }
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "fake_tool",
+                    "args": {}
+                }
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "rag_search",
+                    "args": {}
+                }
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "league_context",
+                    "args": {
+                        "banana": 123
+                    }
+                }
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "rag_search",
+                    "args": {
+                        "query": "What does PPR mean?"
+                    }
+                }
+            ]
+        }
     ]
 
-    for question in questions:
-        print(f"\nQUESTION: {question}")
 
-        plan = create_plan(question)
-
-        print("PLAN:")
+    for plan in test_plans:
         print(plan)
+        print(validate_plan(plan, AVAILABLE_TOOLS))
+        print()
