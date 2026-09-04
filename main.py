@@ -10,6 +10,8 @@ from rag.vector_store import load_index
 from rag.storage import load_chunks
 from league.loader import load_league
 from league.context import build_league_context
+from tools.rag_tool import rag_search
+from tools.league_tool import get_league_context
 
 chunks = load_chunks("rag_data/chunks.json")
 index = load_index("rag_data/index.faiss")
@@ -19,37 +21,30 @@ league_context = build_league_context(league)
 
 get_generator()
 
+rag_result = rag_search(
+    "Why are rushing quarterbacks valuable?",
+    chunks,
+    index
+)
 
+print(rag_result)
+
+league_result = get_league_context(league)
+
+print(league_result)
+
+"""
 while True:
     question = input("\n\nAsk a fantasy football question(type 'quit' to exit): ") #Gets our question from the user
 
     if question.lower().strip() == "quit":
         break
 
-    results = retrieve(question, chunks, index, k=10) #RAG results
-
-    rag_context = ""
-
-    if results:
-        coverage_complete, missing_topics = check_coverage(question, results)
-
-        if coverage_complete:
-            results = rerank_results(question, results, max_results=3)
-
-            rag_context = "\n\n".join(result["text"] for result in results)
-
-            print("\n\nRetrieved Content")
-            for result in results:
-                print(f"\nSource: {result['source']}")
-                print(f"Similarity: {result['score']}")
-                print(f"Rerank Score: {result['rerank_score']}")
-                print(result["text"])
-
-    else:
-        rag_context = ""
+    rag_context = rag_search(question, chunks, index)
 
     print("\n\nANSWER:\n\n")
 
     answer = generate_answer(question,rag_context=rag_context, league_context=league_context) #ANSWER!!!
 
     print(answer)
+"""
