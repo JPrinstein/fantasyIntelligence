@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers.utils import logging
 
-MODEL_NAME = "Qwen/Qwen3-1.7B"
+MODEL_NAME = "Qwen/Qwen3-4B"
 
 model = None
 tokenizer = None
@@ -17,7 +17,7 @@ def get_generator():
 
         model = AutoModelForCausalLM.from_pretrained(MODEL_NAME,            #CausalLM = previous tokens -> predict next token
                                                      torch_dtype="auto",    #torch_dtype and device_map helps automatically place the model based on my hardware
-                                                     ) 
+                                                     ).to("cuda")
 
     return model, tokenizer
 

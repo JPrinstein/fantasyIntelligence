@@ -12,6 +12,7 @@ from league.loader import load_league
 from league.context import build_league_context
 from tools.rag_tool import rag_search
 from tools.league_tool import get_league_context
+from agent.planner import build_tools_prompt
 
 chunks = load_chunks("rag_data/chunks.json")
 index = load_index("rag_data/index.faiss")
@@ -32,6 +33,8 @@ print(rag_result)
 league_result = get_league_context(league)
 
 print(league_result)
+
+print(build_tools_prompt())
 
 """
 while True:
