@@ -21,7 +21,7 @@ def get_generator():
 
     return model, tokenizer
 
-def generate_answer(question,context, thinking=False): #Will add more context/tools later on
+def generate_answer(question, rag_context, league_context="",thinking=False): #Will add more context/tools later on
 
     model, tokenizer = get_generator()
 
@@ -37,14 +37,20 @@ def generate_answer(question,context, thinking=False): #Will add more context/to
                 "the evidence must contain relevant information about each one. "
                 "If there is not enough evidence to answer confidently, say so. "
                 "Do not invent meanings for fantasy football terms or abbreviations. "
+                "Use league context as the authoritative source for league-specific "
+                "scoring and roster settings. General fantasy football information "
+                "from RAG should not override explicit league settings. "
                 "Give one concise answer and do not repeat yourself."
             )
         },
         {
             "role": "user",
             "content": f"""
-                CONTEXT:
-                {context}
+                RAG EVIDENCE:
+                {rag_context}
+
+                LEAGUE CONTEXT:
+                {league_context}
 
                 QUESTION:
                 {question}
@@ -71,10 +77,10 @@ def generate_answer(question,context, thinking=False): #Will add more context/to
     outputs = model.generate(
         **inputs,
         max_new_tokens=tokens,
-        do_sample=True,
-        temperature=0.6,
-        top_p=0.95,
-        top_k=20
+        do_sample=False,
+        #temperature=0.6,
+        #top_p=0.95,
+        #top_k=20
     )
 
     input_length = inputs["input_ids"].shape[1]

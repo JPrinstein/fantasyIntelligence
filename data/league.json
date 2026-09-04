@@ -1,0 +1,22 @@
+{
+  "name": "Test League",
+  "scoring": {
+    "passing_yards": 0.04,
+    "passing_td": 6,
+    "interception": -2,
+    "rushing_yards": 0.1,
+    "rushing_td": 6,
+    "receiving_yards": 0.1,
+    "receiving_td": 6,
+    "reception": 1
+  },
+  "roster_settings": {
+    "QB": 1,
+    "RB": 2,
+    "WR": 2,
+    "TE": 1,
+    "FLEX": 1,
+    "SUPERFLEX": 0,
+    "BENCH": 6
+  }
+}
