@@ -1,53 +1,58 @@
-from rag.loader import load_documents
-from rag.chunker import chunk_documents
-from rag.embeddings import embed_texts
-from rag.vector_store import build_index
-from rag.retriever import retrieve
-from llm.generator import generate_answer, get_generator
-from rag.coverage import check_coverage
-from rag.reranker import rerank_results
 from rag.vector_store import load_index
 from rag.storage import load_chunks
+
 from league.loader import load_league
-from league.context import build_league_context
-from tools.rag_tool import rag_search
-from tools.league_tool import get_league_context
-from agent.planner import build_tools_prompt
+
+from llm.generator import generate_answer, get_generator
+
+from agent.planner import create_plan, enforce_required_tools, AVAILABLE_TOOLS
+from agent.validator import validate_plan
+from agent.executor import execute_plan
+from agent.evidence import build_evidence
 
 chunks = load_chunks("rag_data/chunks.json")
 index = load_index("rag_data/index.faiss")
-
 league = load_league()
-league_context = build_league_context(league)
 
 get_generator()
 
-rag_result = rag_search(
-    "Why are rushing quarterbacks valuable?",
-    chunks,
-    index
-)
-
-print(rag_result)
-
-league_result = get_league_context(league)
-
-print(league_result)
-
-print(build_tools_prompt())
-
-"""
 while True:
-    question = input("\n\nAsk a fantasy football question(type 'quit' to exit): ") #Gets our question from the user
+    question = input("Ask a fantasy football question(type 'quit' or 'exit' to quit): ")
 
-    if question.lower().strip() == "quit":
+    if question.lower().strip() in {"quit","exit"}:
         break
 
-    rag_context = rag_search(question, chunks, index)
+    plan = create_plan("question")
 
-    print("\n\nANSWER:\n\n")
+    plan = enforce_required_tools(
+        question,
+        plan
+    )
 
-    answer = generate_answer(question,rag_context=rag_context, league_context=league_context) #ANSWER!!!
+    validation = validate_plan(plan, AVAILABLE_TOOLS)
 
+    print("\nPLAN:")
+    print(plan)
+
+    if not validation["valid"]:
+        print("\nPLAN ERROR:")
+        print(validation["errors"])
+        continue
+
+    execution_result = execute_plan(
+        plan,
+        chunks,
+        index,
+        league
+    )
+
+    evidence = build_evidence(execution_result)
+
+    answer = generate_answer(
+        question,
+        rag_context = evidence["rag_context"],
+        league_context = evidence["league_context"]
+    )
+
+    print("\nANSWER:")
     print(answer)
-"""

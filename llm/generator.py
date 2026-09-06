@@ -40,7 +40,10 @@ def generate_answer(question, rag_context, league_context="",thinking=False): #W
                 "Use league context as the authoritative source for league-specific "
                 "scoring and roster settings. General fantasy football information "
                 "from RAG should not override explicit league settings. "
-                "Give one concise answer and do not repeat yourself."
+                "Give one concise answer and do not repeat yourself. "
+                "If the question asks about the user's specific league but no league context "
+                "is provided, do not make league-specific claims. State that the available "
+                "evidence is insufficient to determine how the user's league changes the answer."
             )
         },
         {

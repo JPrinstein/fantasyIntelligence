@@ -56,18 +56,23 @@ def create_plan(question):
                 "Do not answer the fantasy football question yourself. "
 
                 "TOOL RULES: "
+
                 "Use rag_search ONLY for general fantasy football knowledge, strategy, "
                 "terminology, concepts, or position information. "
 
-                "Use league_context for ANY question that asks about the user's specific "
-                "league, including phrases such as 'my league', 'this league', league scoring, "
-                "scoring format, roster settings, or how something is valued under that league's rules. "
+                "Any question containing phrases such as 'my league', 'in my league', "
+                "'this league', 'our league', 'my scoring', or 'my roster' MUST use "
+                "league_context. This rule is mandatory even if rag_search is also needed. "
 
-                "If the question can be answered entirely from league settings, use league_context "
-                "and DO NOT use rag_search. "
+                "If the question can be answered entirely from league settings, use "
+                "league_context and DO NOT use rag_search. "
 
-                "If the question needs both general fantasy knowledge and the user's league settings, "
-                "use BOTH rag_search and league_context. "
+                "If the question asks for general fantasy football reasoning AND refers "
+                "to the user's specific league, use BOTH rag_search and league_context. "
+
+                "If the question asks WHY or HOW a fantasy concept, player type, or position is valuable, "
+                "use rag_search for the general explanation. "
+                "If the question also refers to the user's league, use BOTH rag_search and league_context. "
 
                 "EXAMPLES: "
                 "'What does PPR mean?' -> rag_search only. "
@@ -141,6 +146,48 @@ def create_plan(question):
             "error": "Planner returned invalid JSON",
             "raw_response": response
         }
+
+    return plan
+
+def enforce_required_tools(question,plan):
+    question_lower= question.lower()
+
+    selected_tools = {tool_call["tool"] for tool_call in plan.get("tools", [])
+                      if isinstance(tool_call, dict) and "tool" in tool_call}
+
+    league_phrases = [
+        "my league",
+        "in my league",
+        "this league",
+        "our league",
+        "my scoring",
+        "my roster"
+    ]
+
+    rag_phrases = [
+        "why",
+        "how",
+        "valuable",
+        "value",
+        "important"
+    ]
+
+    needs_league_context = any(phrase in question_lower for phrase in league_phrases)
+    needs_rag_context = any(phrase in question_lower for phrase in rag_phrases)
+
+    if needs_league_context and "league_context" not in selected_tools:
+        plan["tools"].append({
+            "tool": "league_context",
+            "args": {}
+        })
+
+    if needs_rag_context and "rag_search" not in selected_tools:
+            plan["tools"].append({
+                "tool": "rag_search",
+                "args": {
+                    "query": question
+                }
+            })
 
     return plan
 
