@@ -4,3 +4,4 @@ documents/
 __pycache__/
 *.pyc
 rag_data/
+data/raw/
