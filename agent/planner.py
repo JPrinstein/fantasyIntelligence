@@ -5,18 +5,40 @@ from tools.rag_tool import TOOL_NAME as RAG_TOOL_NAME
 from tools.rag_tool import TOOL_DESCRIPTION as RAG_TOOL_DESCRIPTION
 from tools.league_tool import TOOL_NAME as LEAGUE_TOOL_NAME
 from tools.league_tool import TOOL_DESCRIPTION as LEAGUE_TOOL_DESCRIPTION
+from tools.player_stats import TOOL_NAME as PLAYER_STATS_TOOL_NAME
+from tools.player_stats import TOOL_DESCRIPTION as PLAYER_STATS_TOOL_DESCRIPTION
 from agent.validator import validate_plan
 
 AVAILABLE_TOOLS = {
     LEAGUE_TOOL_NAME:{
-            "description": RAG_TOOL_DESCRIPTION,
-            "arguments":{}
-        },
+        "description": LEAGUE_TOOL_DESCRIPTION,
+        "arguments":{}
+    },
 
-    RAG_TOOL_NAME:{
+    RAG_TOOL_NAME: {
         "description": RAG_TOOL_DESCRIPTION,
         "arguments": {
-            "query": "The search query to use for the knowledge base."
+            "query": {
+                "description": "The search query to use for the knowledge base.",
+                "required": True
+            }
+        }
+    },
+    PLAYER_STATS_TOOL_NAME: {
+        "description": PLAYER_STATS_TOOL_DESCRIPTION,
+        "arguments": {
+            "player_name": {
+                "description": "The player's full name.",
+                "required": True
+            },
+            "season": {
+                "description": "The NFL season as a four-digit year.",
+                "required": True
+            },
+            "week": {
+                "description": "Optional NFL week number for weekly stats.",
+                "required": False
+            }
         }
     }
 }
@@ -29,11 +51,20 @@ def build_tools_prompt():
         lines.append(f"Tool: {tool_name}")
         lines.append(f"Description: {tool_info["description"]}")
 
-        if tool_info["arguments"]:
+        arguments = tool_info["arguments"]
+
+        if arguments:
             lines.append("Arguments:")
 
-            for argument, description in tool_info["arguments"].items():
-                lines.append(f"{argument}: {description}")
+            for argument_name, argument_info in arguments.items():
+                required_text = (
+                    "required" if argument_info.get("required", True) else "optional"
+                )
+
+                lines.append(
+                    f"- {argument_name} ({required_text}): "
+                    f"{argument_info['description']}"
+                )
 
         else:
             lines.append("Arguments: none")
@@ -74,12 +105,18 @@ def create_plan(question):
                 "use rag_search for the general explanation. "
                 "If the question also refers to the user's league, use BOTH rag_search and league_context. "
 
+                "Use player_stats for questions asking about a specific NFL player's actual "
+                "performance or statistics for a season or week. "
+                "Do not use rag_search when player_stats directly provides the requested facts. "
+
                 "EXAMPLES: "
                 "'What does PPR mean?' -> rag_search only. "
                 "'Is this a PPR league?' -> league_context only. "
                 "'How many points is a passing touchdown in my league?' -> league_context only. "
                 "'Why are rushing quarterbacks valuable?' -> rag_search only. "
                 "'Why are rushing quarterbacks valuable in my league?' -> rag_search and league_context. "
+                "'How did Lamar Jackson perform in 2025?' -> player_stats only. "
+                "'How many passing yards did Lamar Jackson have in Week 3 of 2025?' -> player_stats only. "
 
                 "Return only valid JSON. Do not include markdown, commentary, or explanation."
             )
@@ -164,30 +201,13 @@ def enforce_required_tools(question,plan):
         "my roster"
     ]
 
-    rag_phrases = [
-        "why",
-        "how",
-        "valuable",
-        "value",
-        "important"
-    ]
-
     needs_league_context = any(phrase in question_lower for phrase in league_phrases)
-    needs_rag_context = any(phrase in question_lower for phrase in rag_phrases)
 
     if needs_league_context and "league_context" not in selected_tools:
         plan["tools"].append({
             "tool": "league_context",
             "args": {}
         })
-
-    if needs_rag_context and "rag_search" not in selected_tools:
-            plan["tools"].append({
-                "tool": "rag_search",
-                "args": {
-                    "query": question
-                }
-            })
 
     return plan
 
@@ -250,6 +270,55 @@ if __name__ == "__main__":
                     "tool": "rag_search",
                     "args": {
                         "query": "What does PPR mean?"
+                    }
+                }
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "player_stats",
+                    "args": {
+                        "player_name": "Lamar Jackson",
+                        "season": 2025
+                    }
+                }
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "player_stats",
+                    "args": {
+                        "player_name": "Lamar Jackson",
+                        "season": 2025,
+                        "week": 3
+                    }
+                }
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "player_stats",
+                    "args": {
+                        "player_name": "Lamar Jackson"
+                    }
+                }
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "player_stats",
+                    "args": {
+                        "player_name": "Lamar Jackson",
+                        "season": 2025,
+                        "banana": 123
                     }
                 }
             ]

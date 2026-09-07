@@ -21,29 +21,48 @@ def get_generator():
 
     return model, tokenizer
 
-def generate_answer(question, rag_context, league_context="",thinking=False): #Will add more context/tools later on
+def generate_answer(question, rag_context, league_context="", tool_context="",thinking=False): #Will add more context/tools later on
 
     model, tokenizer = get_generator()
 
     messages = [
         {
             "role": "system",
-           "content": (
+            "content": (
                 "You are a fantasy football assistant. "
                 "Answer specifically about fantasy football value, not real-world football importance. "
+
                 "Use only the provided evidence for factual claims. "
-                "Do not assume league scoring or roster settings that are not provided. "
-                "If a question compares multiple positions, players, or concepts, "
-                "the evidence must contain relevant information about each one. "
-                "If there is not enough evidence to answer confidently, say so. "
-                "Do not invent meanings for fantasy football terms or abbreviations. "
+                "The evidence may include RAG context, league context, and tool context. "
+
+                "Tool context contains factual structured data returned by trusted tools, "
+                "such as player statistics, matchup data, injury data, or projections. "
+                "Treat tool context as authoritative for those factual values. "
+                "Do not invent, estimate, or alter statistics that are not present in the provided evidence. "
+
                 "Use league context as the authoritative source for league-specific "
                 "scoring and roster settings. General fantasy football information "
-                "from RAG should not override explicit league settings. "
-                "Give one concise answer and do not repeat yourself. "
+                "from RAG must not override explicit league settings. "
+
+                "Use RAG context for general fantasy football concepts, strategy, terminology, "
+                "and explanations when that information is provided. "
+
+                "Do not assume league scoring or roster settings that are not provided. "
+                "Do not invent meanings for fantasy football terms or abbreviations. "
+
+                "If a question compares multiple positions, players, or concepts, "
+                "the evidence must contain relevant information about each one. "
+
+                "If there is not enough evidence to answer confidently, say so. "
+
                 "If the question asks about the user's specific league but no league context "
                 "is provided, do not make league-specific claims. State that the available "
-                "evidence is insufficient to determine how the user's league changes the answer."
+                "evidence is insufficient to determine how the user's league changes the answer. "
+
+                "When numerical statistics are provided in tool context, use those exact values "
+                "and do not recalculate them unless the question explicitly requires a calculation. "
+
+                "Give one concise answer and do not repeat yourself."
             )
         },
         {
@@ -54,6 +73,9 @@ def generate_answer(question, rag_context, league_context="",thinking=False): #W
 
                 LEAGUE CONTEXT:
                 {league_context}
+
+                TOOL CONTEXT:
+                {tool_context}
 
                 QUESTION:
                 {question}

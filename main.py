@@ -51,7 +51,8 @@ while True:
     answer = generate_answer(
         question,
         rag_context = evidence["rag_context"],
-        league_context = evidence["league_context"]
+        league_context = evidence["league_context"],
+        tool_context=evidence["tool_context"]
     )
 
     print("\nANSWER:")

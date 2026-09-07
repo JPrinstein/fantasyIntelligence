@@ -71,11 +71,14 @@ def validate_plan(plan, available_tools):
         )
 
         expected_arg_names = set(expected_args.keys())
+
+        required_arg_names = {argument_name for argument_name, argument_definition in expected_args.items() if argument_definition.get("required", True)}
+
         provided_arg_names = set(args.keys())
 
         # Required arguments that were not supplied
         missing_args = (
-            expected_arg_names - provided_arg_names
+            required_arg_names - provided_arg_names
         )
 
         for argument in missing_args:

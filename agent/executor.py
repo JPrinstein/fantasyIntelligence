@@ -1,5 +1,6 @@
 from tools.rag_tool import rag_search
 from tools.league_tool import get_league_context
+from tools.player_stats import player_stats
 
 def execute_plan(plan, chunks, index, league):
     results = []
@@ -18,6 +19,11 @@ def execute_plan(plan, chunks, index, league):
 
         elif tool_name == "league_context":
             result = get_league_context(league)
+
+        elif tool_name == "player_stats":
+            week = args.get("week")
+
+            result = player_stats(args["player_name"], args["season"], week)
 
         results.append({
             "tool": tool_name,
@@ -41,14 +47,12 @@ if __name__ == "__main__":
     test_plan = {
         "tools": [
             {
-                "tool": "rag_search",
+                "tool": "player_stats",
                 "args": {
-                    "query": "Why are rushing quarterbacks valuable?"
+                    "player_name": "Lamar Jackson",
+                    "season": 2025,
+                    "week": 3
                 }
-            },
-            {
-                "tool": "league_context",
-                "args": {}
             }
         ]
     }
