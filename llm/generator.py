@@ -1,5 +1,8 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from transformers.utils import logging
+import torch
+
+import time
 
 MODEL_NAME = "Qwen/Qwen3-4B"
 
@@ -15,9 +18,18 @@ def get_generator():
     if model is None or tokenizer is None:
         tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
-        model = AutoModelForCausalLM.from_pretrained(MODEL_NAME,            #CausalLM = previous tokens -> predict next token
-                                                     torch_dtype="auto",    #torch_dtype and device_map helps automatically place the model based on my hardware
-                                                     ).to("cuda")
+        quantization_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_use_double_quant=True
+        )
+
+        model = AutoModelForCausalLM.from_pretrained(
+            MODEL_NAME,
+            quantization_config=quantization_config,
+            device_map="cuda"
+        )
 
     return model, tokenizer
 
@@ -105,6 +117,8 @@ def generate_answer(question, rag_context, league_context="", tool_context="",th
     if thinking:
         tokens = 500
 
+    start = time.perf_counter()
+
     outputs = model.generate(
         **inputs,
         max_new_tokens=tokens,
@@ -114,8 +128,14 @@ def generate_answer(question, rag_context, league_context="", tool_context="",th
         #top_k=20
     )
 
+    elapsed = time.perf_counter() - start
+
     input_length = inputs["input_ids"].shape[1]
     generated_tokens = outputs[0][input_length:] #Removes the original prompt from the output
+
+    print(f"Generated tokens: {len(generated_tokens)}")
+    print(f"Generation time: {elapsed:.2f}s")
+    print(f"Speed: {len(generated_tokens) / elapsed:.2f} tokens/sec")
 
     answer = tokenizer.decode(
         generated_tokens,
