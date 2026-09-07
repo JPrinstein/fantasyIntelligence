@@ -22,8 +22,9 @@ def execute_plan(plan, chunks, index, league):
 
         elif tool_name == "player_stats":
             week = args.get("week")
+            recent_games = args.get("recent_games")
 
-            result = player_stats(args["player_name"], args["season"], week)
+            result = player_stats(args["player_name"], args["season"], week, recent_games)
 
         results.append({
             "tool": tool_name,

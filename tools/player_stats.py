@@ -9,7 +9,7 @@ TOOL_DESCRIPTION = (
     "specific season or week."
 )
 
-def player_stats(player_name, season, week=None):
+def player_stats(player_name, season, week=None, recent_games=None):
     stats = get_player_stats(
         player_name,
         season,
@@ -49,6 +49,9 @@ def player_stats(player_name, season, week=None):
                 }
             }
 
+    if recent_games is not None:
+        stats = stats.sort("week", descending=True).head(recent_games).sort("week") 
+
     totals = stats.select(
         "passing_yards",
         "passing_tds",
@@ -78,7 +81,7 @@ def player_stats(player_name, season, week=None):
         named=True
     )
 
-    return {
+    result = {
         "success": True,
         "player": first_row["player_display_name"],
         "position": first_row["position"],
@@ -87,10 +90,17 @@ def player_stats(player_name, season, week=None):
         "stats": totals
     }
 
+    if recent_games is not None:
+        result["recent_games"] = recent_games
+        result["weeks"] = stats["week"].to_list()
+
+    return result
+
 if __name__ == "__main__":
     result = player_stats(
         "Lamar Jackson",
-        2025
+        2025,
+        recent_games=3
     )
 
     print(result)

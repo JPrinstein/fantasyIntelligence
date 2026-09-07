@@ -32,6 +32,11 @@ def build_evidence(execution_result):
                 f"Season: {result.get('season')}\n"
             )
 
+            if "recent_games" in result:
+                player_context += (f"Recent games: {result.get('recent_games')}\n"
+                                   f"Weeks: {result.get('weeks')}\n"
+                )
+
             if "week" in result:
                 player_context += (
                 f"Week: {result.get('week')}\n"
@@ -40,7 +45,7 @@ def build_evidence(execution_result):
                 )
             else:
                 player_context += (
-                f"Games: {result.get('games')}\n" #of games played in the season
+                f"Games: {result.get('games')}\n" #of games included in result
                 )
 
             player_context += "Stats:\n"

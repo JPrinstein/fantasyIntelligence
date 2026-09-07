@@ -46,6 +46,13 @@ AVAILABLE_TOOLS = {
                 "type": int,
                 "min": 1,
                 "max": 22
+            },
+            "recent_games":{
+                "description": "Optional number of most recent games to include.",
+                "required": False,
+                "type": int,
+                "min": 1,
+                "max": 18
             }
         }
     }
@@ -136,6 +143,7 @@ def create_plan(question):
                 "'Why are rushing quarterbacks valuable in my league?' -> rag_search and league_context. "
                 "'How did Lamar Jackson perform in 2025?' -> player_stats only. "
                 "'How many passing yards did Lamar Jackson have in Week 3 of 2025?' -> player_stats only. "
+                "How has Lamar Jackson performed over his last 3 games in 2025? → player_stats with recent_games=3"
 
                 "Return only valid JSON. Do not include markdown, commentary, or explanation. "
                 "Use the exact argument types specified in the tool definitions. "
