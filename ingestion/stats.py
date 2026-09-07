@@ -1,6 +1,7 @@
 from pathlib import Path
 import nflreadpy as nfl
 import polars
+from ingestion.players import resolve_player, get_player_directory
 
 RAW_DATA_DIR = Path("data/raw/player_stats")
 
@@ -34,9 +35,14 @@ def get_player_rows(stats, player_name): #Gets player data on a week to week bas
 def get_player_stats(player_name, season, week=None): #Can either get the full season stats or a specific week
     stats = load_cached_player_stats(season)
 
-    player_rows = get_player_rows(
-        stats, player_name
-    )
+    players = get_player_directory(stats)
+
+    player = resolve_player(players, player_name)
+
+    if not player["success"]:
+        return polars.DataFrame()
+
+    player_rows = stats.filter(polars.col("player_id") == player["player_id"])
 
     if week is not None:
         player_rows = player_rows.filter(polars.col("week") == week)
