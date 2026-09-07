@@ -80,6 +80,9 @@ def generate_answer(question, rag_context, league_context="", tool_context="",th
                 "When tool context provides aggregate statistics, describe only those statistics. "
                 "Do not infer game-to-game trends or consistency from season totals alone. "
 
+                "Depth chart rank refers only to the player's rank within the provided team's "
+                "depth chart position and does not represent an NFL-wide player ranking. "
+
                 "Give one concise answer and do not repeat yourself."
             )
         },

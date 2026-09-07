@@ -55,6 +55,20 @@ def build_evidence(execution_result):
 
             tool_context_parts.append(player_context)
 
+        elif tool_name == "player_depth_chart":
+            player_context = (
+                f"Player: {result.get('player')}\n"
+                f"NFL season: {result.get('season')}\n"
+                f"Team: {result.get('team')}\n"
+                f"Position: {result.get('position')}\n"
+                f"Position name: {result.get('position_name')}\n"
+                f"Depth chart rank: {result.get('position_rank')}\n"
+                f"Depth chart status: "
+                f"{result.get('position')}{result.get('position_rank')}\n"
+            )
+
+        tool_context_parts.append(player_context)
+
     tool_context = "\n\n".join(tool_context_parts)
 
     return {

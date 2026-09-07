@@ -1,6 +1,7 @@
 from tools.rag_tool import rag_search
 from tools.league_tool import get_league_context
 from tools.player_stats import player_stats
+from tools.player_depth_chart import player_depth_chart
 
 def execute_plan(plan, chunks, index, league):
     results = []
@@ -25,6 +26,12 @@ def execute_plan(plan, chunks, index, league):
             recent_games = args.get("recent_games")
 
             result = player_stats(args["player_name"], args["season"], week, recent_games)
+
+        elif tool_name == "player_depth_chart":
+            result = player_depth_chart(
+                args["player_name"],
+                args["season"]
+            )
 
         results.append({
             "tool": tool_name,

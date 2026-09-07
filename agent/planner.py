@@ -8,6 +8,8 @@ from tools.league_tool import TOOL_DESCRIPTION as LEAGUE_TOOL_DESCRIPTION
 from tools.player_stats import TOOL_NAME as PLAYER_STATS_TOOL_NAME
 from tools.player_stats import TOOL_DESCRIPTION as PLAYER_STATS_TOOL_DESCRIPTION
 from agent.validator import validate_plan
+from tools.player_depth_chart import TOOL_NAME as PLAYER_DEPTH_CHART_TOOL_NAME
+from tools.player_depth_chart import TOOL_DESCRIPTION as PLAYER_DEPTH_CHART_TOOL_DESCRIPTION
 
 AVAILABLE_TOOLS = {
     LEAGUE_TOOL_NAME:{
@@ -53,6 +55,23 @@ AVAILABLE_TOOLS = {
                 "type": int,
                 "min": 1,
                 "max": 18
+            }
+        }
+    },
+    PLAYER_DEPTH_CHART_TOOL_NAME: {
+        "description": PLAYER_DEPTH_CHART_TOOL_DESCRIPTION,
+        "arguments": {
+            "player_name": {
+                "description": "The player's full name.",
+                "required": True,
+                "type": str
+            },
+            "season": {
+                "description": "The NFL season associated with the depth chart data.",
+                "required": True,
+                "type": int,
+                "min": 1999,
+                "max": 2100
             }
         }
     }
@@ -135,6 +154,14 @@ def create_plan(question):
                 "performance or statistics for a season or week. "
                 "Do not use rag_search when player_stats directly provides the requested facts. "
 
+                "Use player_depth_chart for questions asking about a specific player's "
+                "team, depth chart position, depth chart rank, or current role. "
+                "An NFL season may have depth chart snapshots dated in the following calendar year. "
+                "When depth chart evidence provides an NFL season, treat that season field as "
+                "authoritative. Snapshot timestamps are metadata only and may fall in the "
+                "following calendar year. Never reject or reclassify depth chart evidence "
+                "because the snapshot timestamp's calendar year differs from the NFL season."
+
                 "EXAMPLES: "
                 "'What does PPR mean?' -> rag_search only. "
                 "'Is this a PPR league?' -> league_context only. "
@@ -144,6 +171,8 @@ def create_plan(question):
                 "'How did Lamar Jackson perform in 2025?' -> player_stats only. "
                 "'How many passing yards did Lamar Jackson have in Week 3 of 2025?' -> player_stats only. "
                 "How has Lamar Jackson performed over his last 3 games in 2025? → player_stats with recent_games=3"
+                "'Where is Lamar Jackson on the depth chart in 2025?' -> player_depth_chart only. "
+                "'Is Lamar Jackson the starting quarterback in 2025?' -> player_depth_chart only. "
 
                 "Return only valid JSON. Do not include markdown, commentary, or explanation. "
                 "Use the exact argument types specified in the tool definitions. "
