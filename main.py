@@ -22,7 +22,7 @@ while True:
     if question.lower().strip() in {"quit","exit"}:
         break
 
-    plan = create_plan("question")
+    plan = create_plan(question)
 
     plan = enforce_required_tools(
         question,

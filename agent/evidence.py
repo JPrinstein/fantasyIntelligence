@@ -50,7 +50,7 @@ def build_evidence(execution_result):
 
             tool_context_parts.append(player_context)
 
-            tool_context = "\n\n".join(tool_context_parts)
+    tool_context = "\n\n".join(tool_context_parts)
 
     return {
         "rag_context": rag_context,

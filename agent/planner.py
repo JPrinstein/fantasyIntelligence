@@ -20,7 +20,8 @@ AVAILABLE_TOOLS = {
         "arguments": {
             "query": {
                 "description": "The search query to use for the knowledge base.",
-                "required": True
+                "required": True,
+                "type": str
             }
         }
     },
@@ -29,15 +30,22 @@ AVAILABLE_TOOLS = {
         "arguments": {
             "player_name": {
                 "description": "The player's full name.",
-                "required": True
+                "required": True,
+                "type": str
             },
             "season": {
                 "description": "The NFL season as a four-digit year.",
-                "required": True
+                "required": True,
+                "type": int,
+                "min": 1999,
+                "max": 2100
             },
             "week": {
                 "description": "Optional NFL week number for weekly stats.",
-                "required": False
+                "required": False,
+                "type": int,
+                "min": 1,
+                "max": 22
             }
         }
     }
@@ -61,8 +69,19 @@ def build_tools_prompt():
                     "required" if argument_info.get("required", True) else "optional"
                 )
 
+                argument_type = argument_info.get("type")
+
+                type_names = {
+                    str: "string",
+                    int: "integer",
+                    float: "number",
+                    bool: "boolean"
+                }
+
+                type_text = type_names.get(argument_type, "unknown")
+
                 lines.append(
-                    f"- {argument_name} ({required_text}): "
+                    f"- {argument_name} ({type_text}, {required_text}): "
                     f"{argument_info['description']}"
                 )
 
@@ -118,7 +137,9 @@ def create_plan(question):
                 "'How did Lamar Jackson perform in 2025?' -> player_stats only. "
                 "'How many passing yards did Lamar Jackson have in Week 3 of 2025?' -> player_stats only. "
 
-                "Return only valid JSON. Do not include markdown, commentary, or explanation."
+                "Return only valid JSON. Do not include markdown, commentary, or explanation. "
+                "Use the exact argument types specified in the tool definitions. "
+                "Do not convert integers into strings. "
             )
         },
         {
@@ -322,7 +343,71 @@ if __name__ == "__main__":
                     }
                 }
             ]
-        }
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "player_stats",
+                    "args": {
+                        "player_name": "Lamar Jackson",
+                        "season": "2025"
+                    }
+                }
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "player_stats",
+                    "args": {
+                        "player_name": "Lamar Jackson",
+                        "season": 2025,
+                        "week": 3
+                    }
+                }
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "player_stats",
+                    "args": {
+                        "player_name": "Lamar Jackson",
+                        "season": 2025,
+                        "week": 500
+                    }
+                }
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "player_stats",
+                    "args": {
+                        "player_name": "Lamar Jackson",
+                        "season": -500,
+                        "week": 3
+                    }
+                }
+            ]
+        },
+
+        {
+            "tools": [
+                {
+                    "tool": "player_stats",
+                    "args": {
+                        "player_name": "Lamar Jackson",
+                        "season": "banana",
+                        "week": 3
+                    }
+                }
+            ]
+        },
     ]
 
 

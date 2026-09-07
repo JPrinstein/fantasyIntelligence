@@ -96,6 +96,28 @@ def validate_plan(plan, available_tools):
                 f'Tool "{tool_name}" received unexpected argument "{argument}".'
             )
 
+        for argument_name, argument_value in args.items():
+            if argument_name not in expected_args:
+                continue
+
+            argument_definition = expected_args[argument_name]
+            exepected_type = argument_definition.get("type")
+
+            if exepected_type is None: #If we don't define a type we want 
+                continue
+
+            if type(argument_value) is not exepected_type:
+                errors.append(f"Tool {tool_name} argument {argument_name} must be of type {exepected_type.__name__}, but received {type(argument_value).__name__}.")
+                continue
+
+            minimum = argument_definition.get("min")
+            maximum = argument_definition.get("max")
+
+            if minimum is not None and argument_value < minimum:
+                errors.append(f"Tool {tool_name} argument {argument_name} must be at least {minimum}")
+
+            if maximum is not None and argument_value > maximum:
+                        errors.append(f"Tool {tool_name} argument {argument_name} must be at most {maximum}")
 
     return {
         "valid": len(errors) == 0,

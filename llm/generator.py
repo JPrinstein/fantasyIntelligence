@@ -62,6 +62,12 @@ def generate_answer(question, rag_context, league_context="", tool_context="",th
                 "When numerical statistics are provided in tool context, use those exact values "
                 "and do not recalculate them unless the question explicitly requires a calculation. "
 
+                "Do not infer trends, consistency, efficiency, improvement, decline, or other "
+                "performance patterns unless the provided evidence directly supports that conclusion. "
+
+                "When tool context provides aggregate statistics, describe only those statistics. "
+                "Do not infer game-to-game trends or consistency from season totals alone. "
+
                 "Give one concise answer and do not repeat yourself."
             )
         },
