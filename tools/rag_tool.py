@@ -32,12 +32,12 @@ def rag_search(question, chunks, index):
 
     results = rerank_results(question, results, max_results=3)
 
-    print("\n\nRetrieved Content")
+    """print("\n\nRetrieved Content")
     for result in results:
         print(f"\nSource: {result['source']}")
         print(f"Similarity: {result['score']}")
         print(f"Rerank Score: {result['rerank_score']}")
-        print(result["text"])
+        print(result["text"])"""
 
     content = "\n\n".join(result["text"] for result in results)
     sources = [result["source"] for result in results]
