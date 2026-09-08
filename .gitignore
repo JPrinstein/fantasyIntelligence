@@ -1,6 +1,7 @@
 .env
+.venv/
+venv/
 learning_files/
-documents/
 __pycache__/
 *.pyc
 rag_data/

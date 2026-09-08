@@ -1,0 +1,11 @@
+Fantasy Football Scoring
+
+Fantasy football scoring varies depending on league settings, but common scoring rules include points for rushing yards, receiving yards, passing yards, touchdowns, receptions, interceptions, and fumbles.
+
+In a standard scoring league, rushing and receiving yards are commonly worth 1 fantasy point for every 10 yards. Rushing and receiving touchdowns are commonly worth 6 fantasy points.
+
+Quarterbacks commonly receive 1 fantasy point for every 25 passing yards and 4 fantasy points for a passing touchdown. Passing interceptions commonly result in a loss of 2 fantasy points.
+
+In PPR (points per reception) leagues, a player receives 1 fantasy point for every reception. Half-PPR leagues typically award 0.5 points per reception.
+
+Fantasy football scoring settings can vary significantly between leagues. Before making a recommendation, the league's scoring settings should always be considered.
