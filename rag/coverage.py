@@ -1,8 +1,33 @@
 ## ONLY WORKING BECAUSE OUR DOCUMENTS SYSTEM IS SO SIMPLE, WILL HAVE TO UPDATE LATER ON!!!!
 
 from rag.topics import get_question_topics
+import re
+
+
+LIVE_DATA_PATTERNS = [
+    r"\blast week\b",
+    r"\blast sunday\b",
+    r"\bthis week\b",
+    r"\bthis sunday\b",
+    r"\bcurrently\b",
+    r"\bright now\b",
+    r"\btoday\b",
+    r"\btonight\b",
+]
+
+
+def requires_live_data(question):
+    question = question.lower()
+
+    return any(
+        re.search(pattern, question) for pattern in LIVE_DATA_PATTERNS
+    )
 
 def check_coverage(question, results):
+
+    if requires_live_data(question):
+        return False, ["live_data_required"]
+
     required_topics = get_question_topics(question)
 
     if not required_topics:

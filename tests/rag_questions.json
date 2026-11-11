@@ -26,5 +26,29 @@
   {
     "question": "What is the best pizza topping?",
     "should_answer": false
+  },
+  {
+  "question": "Is Christian McCaffrey currently injured?",
+  "should_answer": false
+  },
+  {
+    "question": "How many receiving yards did Justin Jefferson have last week?",
+    "should_answer": false
+  },
+  {
+    "question": "Who won the Super Bowl in 2026?",
+    "should_answer": false
+  },
+  {
+    "question": "Should I start Lamar Jackson or Josh Allen this week?",
+    "should_answer": false
+  },
+  {
+    "question": "What is the weather forecast for the Bills game?",
+    "should_answer": false
+  },
+  {
+    "question": "How many touchdowns did Derrick Henry score last Sunday?",
+    "should_answer": false
   }
 ]
