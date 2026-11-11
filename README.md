@@ -268,6 +268,15 @@ python -m pip install -r requirements.txt
 
 The local agent uses PyTorch with CUDA and 4-bit `bitsandbytes` quantization. Depending on the system and GPU, PyTorch/CUDA may need to be installed separately with the appropriate build.
 
+### NVIDIA GPU Support
+
+The local Qwen agent uses PyTorch with CUDA for GPU acceleration.
+
+On Windows with a compatible NVIDIA GPU, install the CUDA-enabled PyTorch build after installing the project dependencies:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install --upgrade --force-reinstall "torch==2.13.0+cu130" --index-url https://download.pytorch.org/whl/cu130
+
 ## Building the RAG Index
 
 The generated FAISS index isn't stored in Git. It can be rebuilt from the files in `documents/`:
