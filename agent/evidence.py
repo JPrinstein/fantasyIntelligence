@@ -67,7 +67,7 @@ def build_evidence(execution_result):
                 f"{result.get('position')}{result.get('position_rank')}\n"
             )
 
-        tool_context_parts.append(player_context)
+            tool_context_parts.append(player_context)
 
     tool_context = "\n\n".join(tool_context_parts)
 
