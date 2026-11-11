@@ -13,7 +13,7 @@ def main():
 
     documents = load_documents()
 
-    chunks = chunk_documents(documents, chunk_size=50,overlap=15)
+    chunks = chunk_documents(documents, chunk_size=100,overlap=0)
 
     texts = [chunk["text"] for chunk in chunks]
 

@@ -1,16 +1,32 @@
 def chunk_text(text, chunk_size=50, overlap=15):
-    words = text.split()
+    paragraphs = [
+        paragraph.strip() for paragraph in text.split("\n\n") if paragraph.strip()
+    ]
 
     chunks = []
+    current_paragraphs = []
+    current_word_count = 0
 
-    step = chunk_size - overlap
+    for paragraph in paragraphs:
+        paragraph_word_count = len(paragraph.split())
 
-    for i in range(0, len(words), step):
-        chunk = words[i:i+chunk_size]
-        if chunk:
-            chunks.append(" ".join(chunk))
+        #If adding this paragraph exceeds our target, save the current chunk first and put this in the next chunk
+        if(
+            current_paragraphs and current_word_count + paragraph_word_count > chunk_size
+        ):
+            chunks.append(" ".join(current_paragraphs))
+
+            current_paragraphs = []
+            current_word_count = 0
+
+        current_paragraphs.append(paragraph)
+        current_word_count += paragraph_word_count
+
+    if current_paragraphs:
+        chunks.append(" ".join(current_paragraphs))
 
     return chunks
+
 
 def chunk_documents(documents, chunk_size=50, overlap=15):
     chunks = []
