@@ -1,4 +1,6 @@
 import json
+import re
+import nflreadpy
 
 from llm.runtime import generate_chat
 from tools.rag_tool import TOOL_NAME as RAG_TOOL_NAME
@@ -225,33 +227,71 @@ def create_plan(question):
 
     return plan
 
-def enforce_required_tools(question,plan):
-    question_lower= question.lower()
 
-    selected_tools = {tool_call["tool"] for tool_call in plan.get("tools", [])
-                      if isinstance(tool_call, dict) and "tool" in tool_call}
+def enforce_required_tools(question, plan):
+    if not isinstance(plan.get("tools"), list):
+        return plan
 
-    league_phrases = [
-        "my league",
-        "in my league",
-        "this league",
-        "our league",
-        "my scoring",
-        "my roster", "our scoring", "our roster", "our scoring settings",
-        "my league settings", "our league settings"
-    ]
+    question_lower = question.lower()
+    selected_tools = {
+        call.get("tool")
+        for call in plan["tools"]
+        if isinstance(call, dict)
+    }
 
-    needs_league_context = any(phrase in question_lower for phrase in league_phrases)
+    league_phrases = (
+        "my league", "in my league", "this league",
+        "our league", "my scoring", "my roster",
+        "our scoring", "our roster",
+        "our scoring settings",
+        "my league settings", "our league settings",
+    )
 
-    if needs_league_context and "league_context" not in selected_tools:
-        if not isinstance(plan.get("tools"), list):
-            return plan
+    if (
+        any(phrase in question_lower for phrase in league_phrases)
+        and "league_context" not in selected_tools
+    ):
         plan["tools"].append({
             "tool": "league_context",
-            "args": {}
+            "args": {},
         })
 
+    # Explicit years take priority over "current" wording.
+    explicit_year = re.search(r"\b(?:19|20)\d{2}\b", question_lower)
+
+    current_phrases = (
+        "current", "currently", "right now", "today",
+        "this season", "this year", "latest",
+    )
+
+    is_current_request = (
+        explicit_year is None
+        and any(
+            re.search(r"\b" + re.escape(term) + r"\b", question_lower)
+            for term in current_phrases
+        )
+    )
+
+    if is_current_request:
+        season = int(nflreadpy.get_current_season())
+
+        for call in plan["tools"]:
+            if not isinstance(call, dict):
+                continue
+
+            if call.get("tool") not in {
+                "player_stats",
+                "player_depth_chart",
+            }:
+                continue
+
+            args = call.get("args")
+
+            if isinstance(args, dict):
+                args["season"] = season
+
     return plan
+
 
 if __name__ == "__main__":
     test_plans = [
