@@ -15,6 +15,12 @@ def build_evidence(execution_result):
         result = tool_result["result"]
 
         if not result.get("success"):
+            if tool_name == "player_roster":
+                tool_context_parts.append(
+                    "Roster lookup failed or is unavailable: "
+                    f"{result.get('error', 'Unknown error')}. "
+                    "Do not infer current team membership from this failure."
+                )
             continue
 
         if tool_name == "rag_search":
@@ -81,6 +87,38 @@ def build_evidence(execution_result):
             )
             if source.get("fetched_at_utc"):
                 player_context += f"Data fetched at UTC: {source['fetched_at_utc']}\n"
+            tool_context_parts.append(player_context)
+
+        elif tool_name == "player_roster":
+            source = result.get("data_source", {})
+
+            player_context = (
+                "Verified weekly roster record:\n"
+                f"Player: {result.get('player')}\n"
+                f"GSIS ID: {result.get('player_id')}\n"
+                f"NFL season: {result.get('season')}\n"
+                f"Roster week: {result.get('week')}\n"
+                f"Recorded team: {result.get('team')}\n"
+                f"Position: {result.get('position')}\n"
+                f"Roster status code: {result.get('status')}\n"
+                f"Depth-chart position category: "
+                f"{result.get('depth_chart_position')}\n"
+                f"Data source: {source.get('source', 'unknown')}\n"
+                f"Data freshness: {source.get('freshness', 'unknown')}\n"
+            )
+
+            if source.get("fetched_at_utc"):
+                player_context += (
+                    f"Data fetched at UTC: "
+                    f"{source['fetched_at_utc']}\n"
+                )
+
+            player_context += (
+                "This record establishes a roster listing for the "
+                "specified week. It does not independently prove "
+                "a trade, signing, or release, or establish a depth-chart rank.\n"
+            )
+
             tool_context_parts.append(player_context)
 
     tool_context = "\n\n".join(tool_context_parts)

@@ -12,6 +12,8 @@ from tools.player_stats import TOOL_DESCRIPTION as PLAYER_STATS_TOOL_DESCRIPTION
 from agent.validator import validate_plan
 from tools.player_depth_chart import TOOL_NAME as PLAYER_DEPTH_CHART_TOOL_NAME
 from tools.player_depth_chart import TOOL_DESCRIPTION as PLAYER_DEPTH_CHART_TOOL_DESCRIPTION
+from tools.player_roster import TOOL_NAME as PLAYER_ROSTER_TOOL_NAME
+from tools.player_roster import TOOL_DESCRIPTION as PLAYER_ROSTER_TOOL_DESCRIPTION
 
 AVAILABLE_TOOLS = {
     LEAGUE_TOOL_NAME:{
@@ -76,7 +78,24 @@ AVAILABLE_TOOLS = {
                 "max": 2100
             }
         }
-    }
+    },
+    PLAYER_ROSTER_TOOL_NAME: {
+        "description": PLAYER_ROSTER_TOOL_DESCRIPTION,
+        "arguments": {
+            "player_name": {
+                "description": "The player's full name.",
+                "required": True,
+                "type": str,
+            },
+            "season": {
+                "description": "The NFL season as a four-digit year.",
+                "required": True,
+                "type": int,
+                "min": 1999,
+                "max": 2100,
+            },
+        },
+    },
 }
 
 def build_tools_prompt():
@@ -169,6 +188,15 @@ def create_plan(question):
                 "authoritative. Snapshot timestamps are metadata only and may fall in the "
                 "following calendar year. Never reject or reclassify depth chart evidence "
                 "because the snapshot timestamp's calendar year differs from the NFL season."
+
+                "Use player_roster for questions about a player's current team, "
+                "team membership, roster position, or roster status. "
+                "Prefer player_roster over player_depth_chart when the question "
+                "is only about current team membership. "
+                "Use player_depth_chart for depth-chart rank or starter/backup role. "
+                "Do not claim a trade, signing, or release from a roster record alone. "
+                "When the user asks for current information without specifying a year, "
+                "use the current NFL season. "
 
                 "EXAMPLES: "
                 "'What does PPR mean?' -> rag_search only. "
@@ -282,6 +310,7 @@ def enforce_required_tools(question, plan):
             if call.get("tool") not in {
                 "player_stats",
                 "player_depth_chart",
+                "player_roster",
             }:
                 continue
 
@@ -289,6 +318,21 @@ def enforce_required_tools(question, plan):
 
             if isinstance(args, dict):
                 args["season"] = season
+
+    # Roster lookup without an explicit year means latest season.
+    if explicit_year is None:
+        roster_calls = [
+            call for call in plan["tools"]
+            if isinstance(call, dict)
+            and call.get("tool") == "player_roster"
+            and isinstance(call.get("args"), dict)
+        ]
+
+        if roster_calls and not is_current_request:
+            season = int(nflreadpy.get_current_season())
+
+            for call in roster_calls:
+                call["args"]["season"] = season
 
     return plan
 

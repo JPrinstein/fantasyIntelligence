@@ -1,6 +1,7 @@
 from tools.rag_tool import rag_search
 from tools.league_tool import get_league_context
 from tools.player_stats import player_stats
+from tools.player_roster import player_roster
 from tools.player_depth_chart import player_depth_chart
 
 def execute_plan(plan, chunks, index, league):
@@ -31,6 +32,12 @@ def execute_plan(plan, chunks, index, league):
             result = player_depth_chart(
                 args["player_name"],
                 args["season"]
+            )
+
+        elif tool_name == "player_roster":
+            result = player_roster(
+                args["player_name"],
+                args["season"],
             )
 
         results.append({
