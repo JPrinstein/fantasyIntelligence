@@ -1,3 +1,4 @@
+from nfl_data.auto_refresh import start_background_refresh
 from rag.vector_store import load_index
 from rag.storage import load_chunks
 
@@ -34,6 +35,7 @@ index = load_index("rag_data/index.faiss")
 league = load_league()
 
 print("Inference backend:", backend())
+start_background_refresh()
 if backend() == "transformers":
     model, tokenizer = get_generator()
     print("Model device:", next(model.parameters()).device)

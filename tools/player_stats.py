@@ -10,10 +10,11 @@ TOOL_DESCRIPTION = (
 )
 
 def player_stats(player_name, season, week=None, recent_games=None):
-    stats = get_player_stats(
+    stats, source_metadata = get_player_stats(
         player_name,
         season,
-        week
+        week,
+        with_metadata=True,
     )
 
     if stats.is_empty():
@@ -27,6 +28,7 @@ def player_stats(player_name, season, week=None, recent_games=None):
 
         return {
                 "success": True,
+                "data_source": source_metadata,
                 "player": row["player_display_name"],
                 "position": row["position"],
                 "team": row["team"],
@@ -83,6 +85,7 @@ def player_stats(player_name, season, week=None, recent_games=None):
 
     result = {
         "success": True,
+        "data_source": source_metadata,
         "player": first_row["player_display_name"],
         "position": first_row["position"],
         "season": first_row["season"],

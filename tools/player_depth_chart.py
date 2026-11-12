@@ -11,7 +11,7 @@ TOOL_DESCRIPTION = (
 )
 
 def player_depth_chart(player_name, season):
-    stats = load_cached_player_stats(season)
+    stats, stats_source = load_cached_player_stats(season, with_metadata=True)
 
     players = get_player_directory(stats)
 
@@ -20,7 +20,7 @@ def player_depth_chart(player_name, season):
     if not player["success"]:
         return player
 
-    depth_charts = load_cached_depth_charts(season)
+    depth_charts, depth_source = load_cached_depth_charts(season, with_metadata=True)
 
     player_rows = get_player_depth_chart(
         depth_charts,
@@ -37,6 +37,8 @@ def player_depth_chart(player_name, season):
 
     return {
         "success": True,
+        "data_source": depth_source,
+        "player_directory_source": stats_source,
         "player": row["player_name"],
         "player_id": row["gsis_id"],
         "season": season,

@@ -53,6 +53,13 @@ def build_evidence(execution_result):
             for stat_name, value in stats.items():
                 player_context += f"{stat_name}: {value}\n"
 
+            source = result.get("data_source", {})
+            player_context += (
+                f"Data source: {source.get('source', 'unknown')}\n"
+                f"Data freshness: {source.get('freshness', 'unknown')}\n"
+            )
+            if source.get("fetched_at_utc"):
+                player_context += f"Data fetched at UTC: {source['fetched_at_utc']}\n"
             tool_context_parts.append(player_context)
 
         elif tool_name == "player_depth_chart":
@@ -67,6 +74,13 @@ def build_evidence(execution_result):
                 f"{result.get('position')}{result.get('position_rank')}\n"
             )
 
+            source = result.get("data_source", {})
+            player_context += (
+                f"Data source: {source.get('source', 'unknown')}\n"
+                f"Data freshness: {source.get('freshness', 'unknown')}\n"
+            )
+            if source.get("fetched_at_utc"):
+                player_context += f"Data fetched at UTC: {source['fetched_at_utc']}\n"
             tool_context_parts.append(player_context)
 
     tool_context = "\n\n".join(tool_context_parts)

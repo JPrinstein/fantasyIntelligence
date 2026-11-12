@@ -2,6 +2,7 @@ from pathlib import Path
 
 import nflreadpy as nfl
 import polars
+from nfl_data.readers import read_dataset
 
 RAW_DATA_DIR = Path("data/raw/depth_charts")
 
@@ -19,10 +20,15 @@ def save_depth_charts(depth_charts, season):
 
     return path
 
-def load_cached_depth_charts(season):
-    path = RAW_DATA_DIR/f"depth_charts_{season}.parquet"
+DEPTH_REQUIRED_COLUMNS = {
+    "dt", "gsis_id", "player_name", "team", "pos_abb", "pos_name", "pos_rank",
+}
 
-    return polars.read_parquet(path)
+
+def load_cached_depth_charts(season, *, with_metadata=False):
+    path = RAW_DATA_DIR / f"depth_charts_{season}.parquet"
+    return read_dataset("depth_charts", season, path, DEPTH_REQUIRED_COLUMNS,
+                        with_metadata=with_metadata)
 
 def get_latest_depth_chart(depth_charts):
     latest_dt = depth_charts.select(polars.col("dt").max()).item()
@@ -30,11 +36,13 @@ def get_latest_depth_chart(depth_charts):
     return depth_charts.filter(polars.col("dt") == latest_dt)
 
 def get_player_depth_chart(depth_charts, player_id):
-    latest_depth_chart = get_latest_depth_chart(depth_charts)
-
-    player_rows = latest_depth_chart.filter(polars.col("gsis_id") == player_id)
-
-    return player_rows
+    # A player may be absent from the league's latest global update; use
+    # the player's own most recent available snapshot instead.
+    player_rows = depth_charts.filter(polars.col("gsis_id") == player_id)
+    if player_rows.is_empty():
+        return player_rows
+    latest_dt = player_rows.select(polars.col("dt").max()).item()
+    return player_rows.filter(polars.col("dt") == latest_dt)
 
 if __name__ == "__main__":
     depth_charts = load_depth_charts(2025)
