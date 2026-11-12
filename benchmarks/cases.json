@@ -1,0 +1,89 @@
+{
+  "cases": [
+    {
+      "id": "concept",
+      "kind": "planner",
+      "question": "Why are rushing quarterbacks valuable?",
+      "expected_tools": ["rag_search"]
+    },
+    {
+      "id": "league",
+      "kind": "planner",
+      "question": "How many points is a passing touchdown worth in my league?",
+      "expected_tools": ["league_context"]
+    },
+    {
+      "id": "season_stats",
+      "kind": "planner",
+      "question": "How did Lamar Jackson perform in 2025?",
+      "expected_tools": ["player_stats"],
+      "expected_args": {"player_stats": [{"player_name": "Lamar Jackson", "season": 2025}]}
+    },
+    {
+      "id": "depth_chart",
+      "kind": "planner",
+      "question": "Where is Lamar Jackson on the depth chart in 2025?",
+      "expected_tools": ["player_depth_chart"]
+    },
+    {
+      "id": "multiple_players",
+      "kind": "planner",
+      "question": "Compare Lamar Jackson and Josh Allen's passing and rushing statistics for the 2025 season.",
+      "expected_tools": ["player_stats", "player_stats"],
+      "expected_args": {"player_stats": [{"player_name": "Lamar Jackson", "season": 2025}, {"player_name": "Josh Allen", "season": 2025}]}
+    },
+    {
+      "id": "complex",
+      "kind": "planner",
+      "question": "Compare Lamar Jackson and Josh Allen's 2025 stats and explain why rushing quarterbacks are valuable in my league.",
+      "expected_tools": ["player_stats", "player_stats", "rag_search", "league_context"],
+      "expected_args": {"player_stats": [{"player_name": "Lamar Jackson", "season": 2025}, {"player_name": "Josh Allen", "season": 2025}]}
+    },
+    {
+      "id": "numerical_answer",
+      "kind": "answer",
+      "question": "Compare the provided passing yards for Lamar Jackson and Josh Allen. Do not calculate per-game averages.",
+      "evidence": "Player: Lamar Jackson\nSeason: 2025\nGames: 13\nPassing yards: 2549\n\nPlayer: Josh Allen\nSeason: 2025\nGames: 18\nPassing yards: 4224",
+      "must_contain": ["2,549", "4,224"],
+      "forbidden_phrases": ["yards/game", "per game", "yards per game"]
+    },
+    {"id":"ppr_definition","kind":"planner","question":"What does PPR mean in fantasy football?","expected_tools":["rag_search"]},
+    {"id":"qb_rushing","kind":"planner","question":"Why is a mobile quarterback useful in fantasy?","expected_tools":["rag_search"]},
+    {"id":"rb_workload","kind":"planner","question":"Explain why workload affects a running back's value.","expected_tools":["rag_search"]},
+    {"id":"flex_definition","kind":"planner","question":"What does FLEX mean on a fantasy roster?","expected_tools":["rag_search"]},
+    {"id":"league_ppr","kind":"planner","question":"Is my league PPR?","expected_tools":["league_context"]},
+    {"id":"league_roster","kind":"planner","question":"How many running backs start in my league?","expected_tools":["league_context"]},
+    {"id":"league_flex","kind":"planner","question":"Does my league have a SUPERFLEX spot?","expected_tools":["league_context"]},
+    {"id":"league_scoring","kind":"planner","question":"What is a rushing touchdown worth in my scoring?","expected_tools":["league_context"]},
+    {"id":"league_and_concept","kind":"planner","question":"Explain PPR and tell me whether my league uses it.","expected_tools":["rag_search","league_context"]},
+    {"id":"league_and_qb","kind":"planner","question":"Why do mobile QBs matter in our league?","expected_tools":["rag_search","league_context"]},
+    {"id":"stats_qb_2025","kind":"planner","question":"Give me Josh Allen's 2025 season totals.","expected_tools":["player_stats"],"expected_args":{"player_stats":[{"player_name":"Josh Allen","season":2025}]}},
+    {"id":"stats_rb_2025","kind":"planner","question":"What were Derrick Henry's 2025 statistics?","expected_tools":["player_stats"],"expected_args":{"player_stats":[{"player_name":"Derrick Henry","season":2025}]}},
+    {"id":"stats_week","kind":"planner","question":"How many yards did Lamar Jackson pass for in Week 3 of 2025?","expected_tools":["player_stats"],"expected_args":{"player_stats":[{"player_name":"Lamar Jackson","season":2025,"week":3}]}},
+    {"id":"stats_recent","kind":"planner","question":"Show Lamar Jackson's last 3 games in 2025.","expected_tools":["player_stats"],"expected_args":{"player_stats":[{"player_name":"Lamar Jackson","season":2025,"recent_games":3}]}},
+    {"id":"stats_recent_five","kind":"planner","question":"Summarize Josh Allen's most recent 5 games from 2025.","expected_tools":["player_stats"],"expected_args":{"player_stats":[{"player_name":"Josh Allen","season":2025,"recent_games":5}]}},
+    {"id":"stats_week_no_recent","kind":"planner","question":"What did Josh Allen do during Week 7 in the 2025 NFL season?","expected_tools":["player_stats"],"expected_args":{"player_stats":[{"player_name":"Josh Allen","season":2025,"week":7}]}},
+    {"id":"stats_two_weeks","kind":"planner","question":"Compare Lamar Jackson's Week 3 and Week 4 stats from 2025.","expected_tools":["player_stats","player_stats"],"expected_args":{"player_stats":[{"player_name":"Lamar Jackson","season":2025,"week":3},{"player_name":"Lamar Jackson","season":2025,"week":4}]}},
+    {"id":"stats_two_players","kind":"planner","question":"Compare the 2025 season totals for Justin Jefferson and Drake London.","expected_tools":["player_stats","player_stats"],"expected_args":{"player_stats":[{"player_name":"Justin Jefferson","season":2025},{"player_name":"Drake London","season":2025}]}},
+    {"id":"depth_lamar","kind":"planner","question":"Which team and depth-chart rank did Lamar Jackson hold in 2025?","expected_tools":["player_depth_chart"]},
+    {"id":"depth_allen","kind":"planner","question":"Was Josh Allen QB1 on his team's 2025 depth chart?","expected_tools":["player_depth_chart"]},
+    {"id":"depth_pair","kind":"planner","question":"Compare Lamar Jackson's and Josh Allen's depth-chart ranks in 2025.","expected_tools":["player_depth_chart","player_depth_chart"]},
+    {"id":"stats_and_depth","kind":"planner","question":"Get Lamar Jackson's 2025 stats and depth-chart position.","expected_tools":["player_stats","player_depth_chart"],"expected_args":{"player_stats":[{"player_name":"Lamar Jackson","season":2025}]}},
+    {"id":"stats_and_league","kind":"planner","question":"Get Lamar Jackson's 2025 season stats and my league's scoring rules.","expected_tools":["player_stats","league_context"],"expected_args":{"player_stats":[{"player_name":"Lamar Jackson","season":2025}]}},
+    {"id":"stats_and_concept","kind":"planner","question":"Give Lamar Jackson's 2025 stats and explain why quarterbacks get fantasy points for rushing.","expected_tools":["player_stats","rag_search"],"expected_args":{"player_stats":[{"player_name":"Lamar Jackson","season":2025}]}},
+    {"id":"season_not_recent","kind":"planner","question":"What are Lamar Jackson's total 2025 passing touchdowns?","expected_tools":["player_stats"],"expected_args":{"player_stats":[{"player_name":"Lamar Jackson","season":2025}]}},
+    {"id":"season_not_week","kind":"planner","question":"Summarize Josh Allen's overall 2025 performance.","expected_tools":["player_stats"],"expected_args":{"player_stats":[{"player_name":"Josh Allen","season":2025}]}},
+    {"id":"unsupported_weather","kind":"planner","question":"What will the weather be at the Bills game tomorrow?","expected_tools":[]},
+    {"id":"unsupported_injury","kind":"planner","question":"Is Christian McCaffrey injured right now?","expected_tools":[]},
+    {"id":"unsupported_news","kind":"planner","question":"Who was traded in the NFL this morning?","expected_tools":[]},
+    {"id":"unsupported_pizza","kind":"planner","question":"Which pizza topping should I get?","expected_tools":[]},
+    {"id":"answer_points","kind":"answer","question":"How many points does a rushing TD score in this league?","evidence":"League scoring: rushing touchdown = 6 points.","must_contain":["6"]},
+    {"id":"answer_yds","kind":"answer","question":"How many passing yards did the player have?","evidence":"Player: Lamar Jackson; passing yards: 2549.","must_contain":["2549"]},
+    {"id":"answer_no_average","kind":"answer","question":"State the season rushing-yard totals for two quarterbacks.","evidence":"Lamar Jackson: 349 rushing yards in 13 games. Josh Allen: 678 rushing yards in 18 games.","must_contain":["349","678"],"forbidden_phrases":["per game","yards/game"]},
+    {"id":"answer_reject_no_evidence","kind":"answer","question":"Is Christian McCaffrey injured today?","evidence":"No injury information is available.","must_contain_any":["don't have","do not have","cannot determine","not enough","no injury information","unknown","unavailable"]},
+    {"id":"answer_ppr","kind":"answer","question":"How many points are awarded for each reception?","evidence":"League format: PPR. One point for each reception.","must_contain":["1"]},
+    {"id":"answer_depth","kind":"answer","question":"What is Lamar Jackson's team and depth-chart rank?","evidence":"Lamar Jackson, team BAL, position QB, depth chart rank 1 in 2025.","must_contain_any":["BAL","Baltimore"],"must_contain":["1"]},
+    {"id":"answer_compare_tds","kind":"answer","question":"Compare the passing TD totals for Lamar Jackson and Josh Allen.","evidence":"Lamar Jackson passing TDs: 21. Josh Allen passing TDs: 29.","must_contain":["21","29"]},
+    {"id":"answer_refuse_weather","kind":"answer","question":"What is the weather forecast for tomorrow's game?","evidence":"No weather forecast was provided.","must_contain_any":["don't have","do not have","cannot determine","not enough","no weather","unknown","unavailable","not provided"]}
+  ]
+}

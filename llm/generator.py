@@ -1,42 +1,8 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
-from transformers.utils import logging
-import torch
+"""Production answer generator, using the shared configurable inference runtime."""
+from llm.runtime import generate_chat, get_generator  # backwards-compatible HF accessor
 
-import time
 
-MODEL_NAME = "Qwen/Qwen3-4B"
-
-model = None
-tokenizer = None
-
-logging.set_verbosity_error()
-
-def get_generator():
-    global model
-    global tokenizer
-
-    if model is None or tokenizer is None:
-        tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-
-        quantization_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.bfloat16,
-            bnb_4bit_use_double_quant=True
-        )
-
-        model = AutoModelForCausalLM.from_pretrained(
-            MODEL_NAME,
-            quantization_config=quantization_config,
-            device_map="cuda"
-        )
-
-    return model, tokenizer
-
-def generate_answer(question, rag_context, league_context="", tool_context="",thinking=False): #Will add more context/tools later on
-
-    model, tokenizer = get_generator()
-
+def generate_answer(question, rag_context, league_context="", tool_context="", thinking=False):
     messages = [
         {
             "role": "system",
@@ -104,45 +70,5 @@ def generate_answer(question, rag_context, league_context="", tool_context="",th
         }
                 ]
 
-    text = tokenizer.apply_chat_template(
-        messages,
-        tokenize = False,
-        add_generation_prompt = True,
-        enable_thinking = thinking
-    )
-
-    inputs = tokenizer(
-        text,
-        return_tensors="pt"
-    ).to(model.device)
-
-    tokens = 150
-    if thinking:
-        tokens = 500
-
-    start = time.perf_counter()
-
-    outputs = model.generate(
-        **inputs,
-        max_new_tokens=tokens,
-        do_sample=False,
-        #temperature=0.6,
-        #top_p=0.95,
-        #top_k=20
-    )
-
-    elapsed = time.perf_counter() - start
-
-    input_length = inputs["input_ids"].shape[1]
-    generated_tokens = outputs[0][input_length:] #Removes the original prompt from the output
-
-    print(f"Generated tokens: {len(generated_tokens)}")
-    print(f"Generation time: {elapsed:.2f}s")
-    print(f"Speed: {len(generated_tokens) / elapsed:.2f} tokens/sec")
-
-    answer = tokenizer.decode(
-        generated_tokens,
-        skip_special_tokens=True
-    )
-
-    return answer.strip()
+    return generate_chat(messages, json_mode=False,
+                         max_tokens=500 if thinking else 350, thinking=thinking)

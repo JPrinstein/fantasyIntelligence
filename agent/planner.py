@@ -1,6 +1,6 @@
 import json
 
-from llm.generator import get_generator
+from llm.runtime import generate_chat
 from tools.rag_tool import TOOL_NAME as RAG_TOOL_NAME
 from tools.rag_tool import TOOL_DESCRIPTION as RAG_TOOL_DESCRIPTION
 from tools.league_tool import TOOL_NAME as LEAGUE_TOOL_NAME
@@ -119,8 +119,6 @@ def build_tools_prompt():
     return "\n".join(lines)
 
 def create_plan(question):
-    model, tokenizer = get_generator()
-
     tools_prompt = build_tools_prompt()
 
     messages = [
@@ -153,6 +151,14 @@ def create_plan(question):
                 "Use player_stats for questions asking about a specific NFL player's actual "
                 "performance or statistics for a season or week. "
                 "Do not use rag_search when player_stats directly provides the requested facts. "
+
+                "Never invent optional tool arguments. "
+                "Only supply week when the user requests a specific NFL week. "
+                "Only supply recent_games when the user explicitly requests "
+                "a specific number of recent games. "
+                "If the user asks for season statistics without specifying a "
+                "week or number of games, provide only player_name and season. "
+                "Never silently replace season statistics with recent-game statistics. "
 
                 "Use player_depth_chart for questions asking about a specific player's "
                 "team, depth chart position, depth chart rank, or current role. "
@@ -203,32 +209,7 @@ def create_plan(question):
         }
     ]
 
-    text = tokenizer.apply_chat_template(
-        messages,
-        tokenize = False,
-        add_generation_prompt = True,
-        enable_thinking = False
-    )
-
-    inputs = tokenizer(
-        text,
-        return_tensors="pt"
-    ).to(model.device)
-
-    outputs = model.generate(
-        **inputs,
-        max_new_tokens=200,
-        do_sample=False
-    )
-
-    input_length = inputs["input_ids"].shape[1]
-
-    generated_tokens = outputs[0][input_length:] #Input length got the length of our input and then cut that off so we only get the new stuff
-
-    response = tokenizer.decode(
-        generated_tokens,
-        skip_special_tokens=True
-    ).strip()
+    response = generate_chat(messages, json_mode=True, max_tokens=300)
 
     print("\nRAW PLANNER RESPONSE:")
     print(repr(response))
@@ -256,12 +237,15 @@ def enforce_required_tools(question,plan):
         "this league",
         "our league",
         "my scoring",
-        "my roster"
+        "my roster", "our scoring", "our roster", "our scoring settings",
+        "my league settings", "our league settings"
     ]
 
     needs_league_context = any(phrase in question_lower for phrase in league_phrases)
 
     if needs_league_context and "league_context" not in selected_tools:
+        if not isinstance(plan.get("tools"), list):
+            return plan
         plan["tools"].append({
             "tool": "league_context",
             "args": {}
@@ -453,4 +437,3 @@ if __name__ == "__main__":
         print(validate_plan(plan, AVAILABLE_TOOLS))
         print()
 
-    

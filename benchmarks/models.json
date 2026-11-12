@@ -1,0 +1,20 @@
+{
+  "models": [
+    {"name":"qwen3-4b-nf4", "model_id":"Qwen/Qwen3-4B", "backend":"transformers", "quantization":"nf4", "enabled":true, "thinking":false},
+    {"name":"qwen35-4b-nf4", "model_id":"Qwen/Qwen3.5-4B", "backend":"transformers", "quantization":"nf4", "enabled":false, "thinking":false},
+    {"name":"qwen35-4b-nf4-thinking", "model_id":"Qwen/Qwen3.5-4B", "backend":"transformers", "quantization":"nf4", "overnight":true, "thinking":true},
+    {"name":"qwen3-4b-int8", "model_id":"Qwen/Qwen3-4B", "backend":"transformers", "quantization":"int8", "overnight":true, "thinking":false},
+    {"name":"phi4-mini-nf4", "model_id":"microsoft/Phi-4-mini-instruct", "backend":"transformers", "quantization":"nf4", "overnight":true, "thinking":false},
+    {"name":"qwen3-4b-gguf-q4", "model_id":"unsloth/Qwen3-4B-GGUF", "filename":"Qwen3-4B-Q4_K_M.gguf", "backend":"gguf", "quantization":"Q4_K_M", "overnight":true, "thinking":false, "thinking_template":true},
+    {"name":"qwen35-4b-gguf-q4", "model_id":"unsloth/Qwen3.5-4B-GGUF", "filename":"Qwen3.5-4B-Q4_K_M.gguf", "backend":"gguf", "quantization":"Q4_K_M", "overnight":true, "thinking":false, "thinking_template":true},
+    {"name":"qwen35-4b-gguf-q4-json", "model_id":"unsloth/Qwen3.5-4B-GGUF", "filename":"Qwen3.5-4B-Q4_K_M.gguf", "backend":"gguf", "quantization":"Q4_K_M", "overnight":true, "thinking":false, "thinking_template":true, "json_mode":true},
+    {"name":"qwen35-4b-gguf-q8", "model_id":"unsloth/Qwen3.5-4B-GGUF", "filename":"Qwen3.5-4B-Q8_0.gguf", "backend":"gguf", "quantization":"Q8_0", "overnight":true, "thinking":false, "thinking_template":true},
+    {"name":"qwen3-8b-gguf-q4", "model_id":"unsloth/Qwen3-8B-GGUF", "filename":"Qwen3-8B-Q4_K_M.gguf", "backend":"gguf", "quantization":"Q4_K_M", "overnight":true, "thinking":false, "thinking_template":true},
+    {"name":"qwen3-8b-gguf-q5", "model_id":"unsloth/Qwen3-8B-GGUF", "filename":"Qwen3-8B-Q5_K_M.gguf", "backend":"gguf", "quantization":"Q5_K_M", "overnight":true, "thinking":false, "thinking_template":true},
+    {"name":"qwen35-9b-gguf-q4", "model_id":"unsloth/Qwen3.5-9B-GGUF", "filename":"Qwen3.5-9B-Q4_K_M.gguf", "backend":"gguf", "quantization":"Q4_K_M", "overnight":true, "thinking":false, "thinking_template":true},
+    {"name":"phi4-mini-gguf-q4", "model_id":"unsloth/Phi-4-mini-instruct-GGUF", "filename":"Phi-4-mini-instruct-Q4_K_M.gguf", "backend":"gguf", "quantization":"Q4_K_M", "overnight":true, "thinking":false},
+    {"name":"gemma3-4b-gguf-q4", "model_id":"unsloth/gemma-3-4b-it-GGUF", "filename":"gemma-3-4b-it-Q4_K_M.gguf", "backend":"gguf", "quantization":"Q4_K_M", "overnight":true, "thinking":false},
+    {"name":"moonlight16b-a3b-gguf-q2-experimental", "model_id":"gabriellarson/Moonlight-16B-A3B-Instruct-GGUF", "filename":"Moonlight-16B-A3B-Instruct-Q2_K.gguf", "backend":"gguf", "quantization":"Q2_K", "overnight":true, "thinking":false, "gpu_layers":8, "ctx_size":2048, "experimental":true, "note":"Kimi-family predecessor; third-party GGUF, custom chat template compatibility unverified."},
+    {"name":"moonlight16b-a3b-gguf-q4-experimental", "model_id":"gabriellarson/Moonlight-16B-A3B-Instruct-GGUF", "filename":"Moonlight-16B-A3B-Instruct-Q4_K_M.gguf", "backend":"gguf", "quantization":"Q4_K_M", "thinking":false, "gpu_layers":5, "ctx_size":2048, "experimental":true, "note":"10.5 GB weights and CPU offload, manually opt in after Q2 works."}
+  ]
+}
