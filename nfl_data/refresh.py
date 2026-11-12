@@ -1,4 +1,5 @@
 """Safely fetch and maintain NFL data snapshots without changing legacy caches."""
+
 from __future__ import annotations
 
 import argparse
@@ -13,12 +14,21 @@ import uuid
 
 DEFAULT_ROOT = Path(__file__).resolve().parent / "snapshots"
 # Freshness is our fetch cadence, NOT a guarantee the upstream feed has updated.
-REFRESH_HOURS = {"player_stats": 6, "depth_charts": 12, "schedules": 24, "injuries": 6}
+REFRESH_HOURS = {
+    "player_stats": 6,
+    "depth_charts": 6,
+    "schedules": 12,
+    "injuries": 3,
+    "rosters": 6,
+    "rosters_weekly": 6,
+}
 REQUIRED_COLUMNS = {
     "player_stats": {"season", "week"},
-    "depth_charts": set(),  # provider schemas vary; count and actual columns are recorded
+    "depth_charts": set(),
     "schedules": set(),
     "injuries": set(),
+    "rosters": set(),
+    "rosters_weekly": set(),
 }
 
 
@@ -66,13 +76,28 @@ def age_hours(entry, current=None):
     current = current or now_utc()
     return max(0., (current - parse_utc(entry["fetched_at_utc"])).total_seconds() / 3600)
 
-
 def fetch_dataset(nfl, dataset, season):
-    # Use explicit season and weekly granularity; no silently varying defaults.
-    if dataset == "player_stats":
-        return nfl.load_player_stats(seasons=season, summary_level="week")
-    return getattr(nfl, {"depth_charts": "load_depth_charts", "schedules": "load_schedules", "injuries": "load_injuries"}[dataset])(seasons=season)
+    season = int(season)
 
+    if dataset == "player_stats":
+        return nfl.load_player_stats(
+            seasons=season,
+            summary_level="week",
+        )
+
+    loaders = {
+        "depth_charts": "load_depth_charts",
+        "schedules": "load_schedules",
+        "injuries": "load_injuries",
+        "rosters": "load_rosters",
+        "rosters_weekly": "load_rosters_weekly",
+    }
+
+    if dataset not in loaders:
+        raise ValueError(f"Unknown dataset: {dataset}")
+
+    loader = getattr(nfl, loaders[dataset])
+    return loader(seasons=season)
 
 def refresh_one(dataset, season, root=DEFAULT_ROOT, provider=None, current=None):
     """Publish an independently validated snapshot; preserve the old one on failure.

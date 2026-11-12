@@ -43,6 +43,10 @@ class Provider:
         return self._get("schedules", **kwargs)
     def load_injuries(self, **kwargs):
         return self._get("injuries", **kwargs)
+    def load_rosters(self, **kwargs):
+        return self._get("rosters", **kwargs)
+    def load_rosters_weekly(self, **kwargs):
+        return self._get("rosters_weekly", **kwargs)
 
 
 class SnapshotTests(unittest.TestCase):
